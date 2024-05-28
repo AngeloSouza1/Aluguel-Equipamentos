@@ -9,11 +9,17 @@ class CustomersController < ApplicationController
   end
 
   def new
-    @customers = Customer.new
+    @customer = Customer.new
   end
 
   def create
-    @customers = Customer.new customer_params
+    @customer = Customer.new customer_params
+
+    if @customer.save
+      redirect_to customers_path, notice: "Cliente cadastrado com sucesso."
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def  edit
@@ -21,7 +27,11 @@ class CustomersController < ApplicationController
   end
 
   def update
-
+    if @customer.update customer_params
+      redirect_to customer_params, notice: "Cliente atualizado com sucesso."
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def destroy
@@ -29,6 +39,10 @@ class CustomersController < ApplicationController
   end
 
   private
+
+  def customer_params
+    params.require(:customer).permit(:name, :dob, :mobile_phone, :email)
+  end
 
   def load_customer
     @customer = Customer.find params[:id]
